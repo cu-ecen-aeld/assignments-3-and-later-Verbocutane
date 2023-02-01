@@ -66,9 +66,6 @@ bool do_system(const char *cmd)
 *   by the command issued in @param arguments with the specified arguments.
 */
 
-#include <syslog.h>
-#include <errno.h>
-
 bool do_exec(int count, ...)
 {
 	bool bSucceed = false;
@@ -92,9 +89,6 @@ bool do_exec(int count, ...)
  *
 */
 
-
-openlog ("do_exec", LOG_CONS | LOG_PID, LOG_USER);
-
 	if (command[0] != NULL)
 	{
 		pid_t ChildId = fork();
@@ -103,13 +97,7 @@ openlog ("do_exec", LOG_CONS | LOG_PID, LOG_USER);
 		{
 			if (ChildId == 0)
 			{
-
-syslog (LOG_DEBUG, "execv(%s, %s - %d)", command[0], command[1], count);
-
 				execv(command[0], command);
-
-syslog (LOG_DEBUG, "execv() Err = %d", errno);
-closelog();
 				exit(1);
 			}
 			else
@@ -117,8 +105,6 @@ closelog();
 				int iStatus = 0;
 				if (wait(&iStatus) != ChildId);
 				{
-syslog (LOG_DEBUG, "wait() iStatus = %d", iStatus);
-
 					bSucceed = WIFEXITED(iStatus) && (WEXITSTATUS(iStatus) == 0);
 				}
 			}
@@ -127,8 +113,6 @@ syslog (LOG_DEBUG, "wait() iStatus = %d", iStatus);
 
     va_end(args);
 
-syslog (LOG_DEBUG, "return %d", bSucceed);
-closelog();
     return bSucceed;
 }
 
