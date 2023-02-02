@@ -13,43 +13,44 @@
  *   either in invocation of the system() call, or if a non-zero return
  *   value was returned by the command issued in @param cmd.
 */
-bool do_system(const char *cmd)
+bool
+do_system (const char *cmd)
 {
-	bool bSucceed = false;
+  bool bSucceed = false;
 /*
  *  Call the system() function with the command set in the cmd
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
 
-	if (cmd != NULL)
+  if (cmd != NULL)
+    {
+      char *LocalCmd = NULL;
+      if (cmd[0] == '-')
 	{
-		char *LocalCmd = NULL;
-		if (cmd[0] == '-')
-		{
-			// See https://man7.org/linux/man-pages/man3/system.3.html#BUGS
-			int iCmdLen = strlen(cmd);
-			LocalCmd = malloc(iCmdLen + 2);
-			strcpy(&LocalCmd[1], cmd); 
-			LocalCmd[0] = ' ';
-		}
-
-		int iRetVal = system(LocalCmd != NULL ? LocalCmd : cmd);
-
-		if (iRetVal == 0)
-		{
-			bSucceed = true;	
-		}
-
-		if (LocalCmd != NULL)
-		{
-			free(LocalCmd);
-			LocalCmd = NULL;
-		}
-
+	  // See https://man7.org/linux/man-pages/man3/system.3.html#BUGS
+	  int iCmdLen = strlen (cmd);
+	  LocalCmd = malloc (iCmdLen + 2);
+	  strcpy (&LocalCmd[1], cmd);
+	  LocalCmd[0] = ' ';
 	}
 
-    return bSucceed;
+      int iRetVal = system (LocalCmd != NULL ? LocalCmd : cmd);
+
+      if (iRetVal == 0)
+	{
+	  bSucceed = true;
+	}
+
+      if (LocalCmd != NULL)
+	{
+	  free (LocalCmd);
+	  LocalCmd = NULL;
+	}
+
+    }
+
+  return bSucceed;
 }
 
 /**
@@ -66,19 +67,20 @@ bool do_system(const char *cmd)
 *   by the command issued in @param arguments with the specified arguments.
 */
 
-bool do_exec(int count, ...)
+bool
+do_exec (int count, ...)
 {
-	bool bSucceed = false;
+  bool bSucceed = false;
 
-    va_list args;
-    va_start(args, count);
-    char * command[count+1];
-    int i;
-    for(i=0; i<count; i++)
+  va_list args;
+  va_start (args, count);
+  char *command[count + 1];
+  int i;
+  for (i = 0; i < count; i++)
     {
-        command[i] = va_arg(args, char *);
+      command[i] = va_arg (args, char *);
     }
-    command[count] = NULL;
+  command[count] = NULL;
 
 /*
  *   Execute a system command by calling fork, execv(),
@@ -89,31 +91,32 @@ bool do_exec(int count, ...)
  *
 */
 
-	if (command[0] != NULL)
+  if (command[0] != NULL)
+    {
+      pid_t ChildId = fork ();
+
+      if (ChildId >= 0)
 	{
-		pid_t ChildId = fork();
-
-		if (ChildId >= 0) 
-		{
-			if (ChildId == 0)
-			{
-				execv(command[0], command);
-				exit(1);
-			}
-			else
-			{
-				int iStatus = 0;
-				if (wait(&iStatus) != ChildId);
-				{
-					bSucceed = WIFEXITED(iStatus) && (WEXITSTATUS(iStatus) == 0);
-				}
-			}
-		}
+	  if (ChildId == 0)
+	    {
+	      execv (command[0], command);
+	      exit (1);
+	    }
+	  else
+	    {
+	      int iStatus = 0;
+	      if (wait (&iStatus) != ChildId);
+	      {
+		bSucceed = WIFEXITED (iStatus)
+		  && (WEXITSTATUS (iStatus) == 0);
+	      }
+	    }
 	}
+    }
 
-    va_end(args);
+  va_end (args);
 
-    return bSucceed;
+  return bSucceed;
 }
 
 /**
@@ -121,19 +124,20 @@ bool do_exec(int count, ...)
 *   This file will be closed at completion of the function call.
 * All other parameters, see do_exec above
 */
-bool do_exec_redirect(const char *outputfile, int count, ...)
+bool
+do_exec_redirect (const char *outputfile, int count, ...)
 {
-	bool bSucceed = false;
+  bool bSucceed = false;
 
-    va_list args;
-    va_start(args, count);
-    char * command[count+1];
-    int i;
-    for(i=0; i<count; i++)
+  va_list args;
+  va_start (args, count);
+  char *command[count + 1];
+  int i;
+  for (i = 0; i < count; i++)
     {
-        command[i] = va_arg(args, char *);
+      command[i] = va_arg (args, char *);
     }
-    command[count] = NULL;
+  command[count] = NULL;
 
 /*
  *   Call execv, but first using https://stackoverflow.com/a/13784315/1446624 as a refernce,
@@ -142,41 +146,43 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *
 */
 
-	if (command[0] != NULL)
+  if (command[0] != NULL)
+    {
+      pid_t ChildId = fork ();
+
+      if (ChildId >= 0)
 	{
-		pid_t ChildId = fork();
+	  if (ChildId == 0)
+	    {
 
-		if (ChildId >= 0) 
+	      if (outputfile != NULL)
 		{
-			if (ChildId == 0)
-			{
-
-				if (outputfile != NULL)
-				{
-					int iRedirect = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
-					if (iRedirect != -1)
-					{
-						dup2(iRedirect, STDOUT_FILENO);
-						close(iRedirect);
-					}
-				}
-				
-
-				execv(command[0], command);
-				exit(1);
-			}
-			else
-			{
-				int iStatus = 0;
-				if (wait(&iStatus) != ChildId);
-				{
-					bSucceed = WIFEXITED(iStatus) && (WEXITSTATUS(iStatus) == 0);
-				}
-			}
+		  int iRedirect =
+		    open (outputfile, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+		  if (iRedirect != -1)
+		    {
+		      dup2 (iRedirect, STDOUT_FILENO);
+		      close (iRedirect);
+		    }
 		}
+
+
+	      execv (command[0], command);
+	      exit (1);
+	    }
+	  else
+	    {
+	      int iStatus = 0;
+	      if (wait (&iStatus) != ChildId);
+	      {
+		bSucceed = WIFEXITED (iStatus)
+		  && (WEXITSTATUS (iStatus) == 0);
+	      }
+	    }
 	}
+    }
 
-    va_end(args);
+  va_end (args);
 
-    return bSucceed;
+  return bSucceed;
 }
