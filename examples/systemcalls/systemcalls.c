@@ -103,7 +103,7 @@ bool do_exec(int count, ...)
 			else
 			{
 				int iStatus = 0;
-				if (wait(&iStatus) != ChildId);
+				if (wait(&iStatus) == ChildId)
 				{
 					bSucceed = WIFEXITED(iStatus) && (WEXITSTATUS(iStatus) == 0);
 				}
