@@ -14,7 +14,7 @@ ARCH=arm64
 CROSS_COMPILE=aarch64-none-linux-gnu-
 SCRIPT_FOLDER=$(pwd)
 
-PATH=$PATH:/home/osboxes/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/bin
+PATH=$PATH:~/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/bin
 
 if [ $# -lt 1 ]
 then
@@ -116,11 +116,11 @@ ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
 echo "ADDING REQUIRED LIBRARIES"
-cp /home/osboxes/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib/
+cp ~/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib/
 
-cp /home/osboxes/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64/
-cp /home/osboxes/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64/
-cp /home/osboxes/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64/
+cp ~/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64/
+cp ~/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64/
+cp ~/coursera/aarch64/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64/
 
 
 # TODO: Make device nodes
