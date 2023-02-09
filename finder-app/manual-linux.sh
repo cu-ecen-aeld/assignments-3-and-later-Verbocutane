@@ -117,11 +117,16 @@ ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
 echo "ADDING REQUIRED LIBRARIES"
-cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib/
+# Looks like it can not be reached when runing in docker ...
+#cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib/
 
-cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64/
-cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64/
-cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64/
+#cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64/
+#cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64/
+#cp ${COMPILER_FOLDER}/aarch64-none-linux-gnu/libc/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64/
+
+cd $SCRIPT_FOLDER
+cp ./lib/* ${OUTDIR}/rootfs/lib/
+cp ./lib64/* ${OUTDIR}/rootfs/lib64/
 
 
 # TODO: Make device nodes
