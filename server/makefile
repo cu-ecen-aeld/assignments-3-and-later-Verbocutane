@@ -1,5 +1,5 @@
 CC=$(CROSS_COMPILE)gcc
-CFLAGS= -g -Wall -Werror
+CFLAGS=-I.
 ODIR=obj
 
 dir_guard=@mkdir -p $(@D)
